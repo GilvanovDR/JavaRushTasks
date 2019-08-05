@@ -1,0 +1,99 @@
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+/*
+ * GilvanovDR 2019
+ */
+
+/*
+НАйти все Армстронг числа от 1 до N(long) (не включая N)
+*/
+public class Solution {
+    private static long[][] powerMatrix = new long[10][20];
+
+    static {
+        for (int num = 0; num < 10; num++) {
+            for (int power = 0; power < 20; power++) {
+                powerMatrix[num][power] = toPower(num, power);
+            }
+        }
+    }
+
+    private static long toPower(int num, int power) {
+        if (power == 0) return 1;
+        if (num == 0) return 0;
+        long result = 1;
+        for (int i = 1; i <= power; i++) {
+            result *= num;
+        }
+        return result;
+    }
+
+    public static long[] getNumbers(long N) {
+        Set<Long> list = new HashSet<>();
+        long buff;
+        long i = 0;
+        while (i < N * 1.5) {
+            if ((buff = isArmstrong(i)) > 0) {
+                if (buff < N) {
+                    list.add(buff);
+                }
+            }
+            i += inkI(i);
+            if (i < 0) break;
+        }
+        long[] result = new long[list.size()];
+        Iterator iterator = list.iterator();
+        for (int j = 0; j < list.size(); j++) {
+            result[j] = (long) iterator.next();
+        }
+        Arrays.sort(result);
+        return result;
+    }
+
+    private static long inkI(long oldNum) {
+        if (oldNum == 0) {
+            return 1;
+        }
+        int oldNumSize = (int) (Math.log10(oldNum) + 1);
+        if (oldNumSize == 1) {
+            return 1;
+        }
+        long newNum = deleteZeroFromNum(oldNum);
+        int newSize = (int) (Math.log10(newNum) + 1);
+        if ((oldNumSize - newSize) == 0) {
+            return 1;
+        }
+        return (oldNum / newNum) / 10 * (newNum % 10);
+    }
+
+    private static long deleteZeroFromNum(long oldNum) {
+        while ((oldNum % 10) == 0) {
+            oldNum /= 10;
+        }
+        return oldNum;
+    }
+
+    private static long toStFunc(long number) {
+        int power = (int) (Math.log10(number) + 1);
+        long buf = 0;
+        while (number > 0) {
+            buf += powerMatrix[(int) (number % 10)][power];
+            number = number / 10;
+        }
+        return buf;
+    }
+
+    private static long isArmstrong(long i) {
+        long number = toStFunc(i);
+        if (number <= 0) return -1;
+        long buf = toStFunc(number);
+        return (buf == number) ? number : -1;
+    }
+
+    public static void main(String[] args) {
+
+    }
+}
